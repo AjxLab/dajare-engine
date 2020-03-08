@@ -2,6 +2,7 @@ Dajare engine
 =============
 
 [![build](https://github.com/AjxLab/dajare-engine/workflows/build/badge.svg)](https://github.com/AjxLab/dajare-engine/actions)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![Twitter](https://img.shields.io/badge/Twitter-%40rits_dajare-blue?style=flat-square&logo=twitter)](https://twitter.com/rits_dajare)
 
 ## Requiremenst
