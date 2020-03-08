@@ -1,6 +1,8 @@
 Dajare engine
 =============
 
+[![build](https://github.com/AjxLab/dajare-engine/workflows/build/badge.svg)](https://github.com/AjxLab/dajare-engine/actions)
+[![Twitter](https://img.shields.io/badge/Twitter-%40rits_dajare-blue?style=flat-square&logo=twitter)](https://twitter.com/rits_dajare)
 
 ## Requiremenst
 - Python 3
