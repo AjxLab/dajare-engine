@@ -4,4 +4,4 @@ Janome==0.3.10
 tensorflow==2.1.0
 kanjize==0.1.0
 django-sslserver
-
+django-cors-headers
