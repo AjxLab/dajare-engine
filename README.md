@@ -1,9 +1,10 @@
-# ダジャレ判定エンジン
+Dajare engine
+=============
 
 
 ## Requiremenst
 - Python 3
-- Django 3.0.3
+- Django
 
 
 ## Usage
@@ -28,6 +29,13 @@ $ ./manage.py test
 $ git clone <this repo>
 $ cd <this repo>
 ```
+### Create python venv
+```sh
+# create
+$ python -m venv venv
+# active
+$ source venv/bin/activate
+```
 ### Install python libs
 ```sh
 $ pip install -r requirements.txt
@@ -39,4 +47,5 @@ $ pip install -r requirements.txt
 
 ## Author
 - Tatsuya Abe
+- abe12@mccc.jp
 
