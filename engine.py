@@ -202,13 +202,24 @@ def to_katakana(sentence, rm_ltu=False):
     return katakana
 
 
-def is_joke(sentence, n=3, rm_ltu=False):
+def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
     n：文字を分割する単位
     rm_ltu：「っ」を削除するかどうか
     '''
+
+    if not rm_hyphen:
+        tmp = ''
+        for c in sentence:
+            if len(tmp) ==0:
+                tmp += c
+            elif tmp[-1] != c:
+                tmp += c
+        if sentence != tmp: print(tmp)
+        sentence = tmp
+
     katakana = to_katakana(sentence, rm_ltu)
 
     # 1文字ずつずらしてn文字の要素を作成
@@ -219,8 +230,9 @@ def is_joke(sentence, n=3, rm_ltu=False):
     if len(set(col)) != len(col):
         return True
     else:
-        if 'ー' in katakana:
-            return is_joke(katakana.replace('ー', ''))
+        if not rm_hyphen:
+            if 'ー' in katakana:
+                return is_joke(katakana.replace('ー', ''), rm_hyphen=True)
         if not rm_ltu:
             if 'っ' in sentence or 'ッ' in sentence:
                 if is_joke(sentence, rm_ltu=True):
