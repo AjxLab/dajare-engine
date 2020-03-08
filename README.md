@@ -38,6 +38,7 @@ $ source venv/bin/activate
 ```
 ### Install python libs
 ```sh
+$ pip install --upgrade pip
 $ pip install -r requirements.txt
 ```
 
