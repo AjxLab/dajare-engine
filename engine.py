@@ -213,11 +213,12 @@ def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
     if not rm_hyphen:
         tmp = ''
         for c in sentence:
-            if len(tmp) ==0:
+            if len(tmp) < 2:
                 tmp += c
-            elif tmp[-1] != c:
+            elif tmp[-1]==tmp[-2] and tmp[-1]==c:
+                continue
+            else:
                 tmp += c
-        if sentence != tmp: print(tmp)
         sentence = tmp
 
     katakana = to_katakana(sentence, rm_ltu)
