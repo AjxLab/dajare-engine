@@ -32,7 +32,7 @@ $ python train.py
 ### Django
 #### Run Server
 ```sh
-$ ./manage.py runserver 0.0.0.0:8080
+$ ./manage.py runserver 0:8080
 ```
 #### Run Test
 ```sh
