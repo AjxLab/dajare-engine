@@ -11,7 +11,15 @@ Dajare engine
 
 </div>
 
+
+## Description
+
+This project's objective is to spread puns posted on RDC official slack's #ダジャレ channel through an official [Twitter account](https://twitter.com/rits_dajare).<br>
+Automatically determines whether a posted sentence is pun, and if true, gives a star with the rating engine.
+
+
 ## Requiremenst
+
 - Python 3
 - Django
 
@@ -33,19 +41,25 @@ $ ./manage.py test
 
 
 ## Installation
+
 ### Clone this repo
+
 ```sh
 $ git clone <this repo>
 $ cd <this repo>
 ```
+
 ### Create python venv
+
 ```sh
 # create
 $ python -m venv venv
 # active
 $ source venv/bin/activate
 ```
+
 ### Install python libs
+
 ```sh
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
@@ -53,9 +67,22 @@ $ pip install -r requirements.txt
 
 
 ## References
+
 <div><a href="https://dajare.jp/" target="_blank"><img src="https://dajare.jp/library/image/Banner/Advertisement/Dajare180x28.png" alt="ダジャレ（だじゃれ）ステーション" border="0" vspace="8" onmouseover="this.src=this.src.replace('png','gif');" onmouseout="this.src=this.src.replace('gif','png');" /></a></div>
 
+
+## Wiki
+
+Please look at the [documents](https://github.com/AjxLab/dajare-engine/wiki).
+
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at [https://github.com/AjxLab/dajare-engine](https://github.com/AjxLab/dajare-engine).
+
+
 ## Author
+
 - Tatsuya Abe
 - abe12@mccc.jp
 
