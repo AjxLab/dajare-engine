@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from dajare_engine import views
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('joke/judge/', views.joke_judge),
+    path('joke/evaluate/', views.joke_evaluate),
+    path('joke/reading/', views.joke_reading),
 ]
