@@ -104,7 +104,7 @@ class Evaluate(object):
 
         # ダジャレ読み込み
         jokes = []
-        jokes = json.load(open('data/raw/jokes.json', 'r'))
+        jokes = json.load(open('data/jokes.json', 'r'))
 
         # データセットを作成
         for joke in tqdm(jokes):
