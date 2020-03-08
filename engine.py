@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os, re
-from janome.tokenizer import Tokenizer
 import numpy as np
 from tensorflow.keras import *
 from tensorflow.keras.layers import *
@@ -8,10 +7,11 @@ from tensorflow.keras.callbacks import *
 from tensorflow.keras.optimizers import *
 from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
-import json
-import math
+from janome.tokenizer import Tokenizer
 from kanjize import int2kanji
 from tqdm import tqdm
+import json
+import math
 
 
 class Evaluate(object):
