@@ -120,6 +120,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
+# CORS
+CORS_ORIGIN_WHITELIST = (
+    'rits-dajare.github.io/',
+)
+
 '''
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
