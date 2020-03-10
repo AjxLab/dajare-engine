@@ -232,8 +232,8 @@ def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
         return True
     else:
         if not rm_hyphen:
-            if 'ー' in katakana:
-                return is_joke(katakana.replace('ー', ''), rm_hyphen=True)
+            if 'ー' in sentence:
+                return is_joke(sentence.replace('ー', ''), rm_hyphen=True)
         if not rm_ltu:
             if 'っ' in sentence or 'ッ' in sentence:
                 if is_joke(sentence, rm_ltu=True):
@@ -254,6 +254,7 @@ if __name__ == '__main__':
     jokes.append('布団が吹っ飛んだ')
     jokes.append('ソースを読んで納得したプログラマ「そーすね」')
     jokes.append('太古の太閤が太鼓で対抗')
+    jokes.append('スロットで金すろーと')
 
     model = Evaluate(False)
 
