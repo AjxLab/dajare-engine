@@ -13,6 +13,7 @@ from kanjize import int2kanji
 from tqdm import tqdm
 import json
 import math
+import docomo
 
 
 class Evaluate(object):
@@ -171,23 +172,29 @@ def to_katakana(sentence, rm_ltu=False):
     '''
     katakana = ''
 
-    # 数字 -> 漢数字
-    while re.match('\d+', sentence):
-        c = re.match('\d+', sentence).group()
-        sentence = sentence.replace(c, int2kanji(int(c)))
+    res = docomo.goo(sentence)
+    if docomo.check_health(res):
+        # APIが利用可
+        katakana = res.json()['converted'].replace(' ', '')
+    else:
+        # APIが利用不可
+        # 数字 -> 漢数字
+        while re.match('\d+', sentence):
+            c = re.match('\d+', sentence).group()
+            sentence = sentence.replace(c, int2kanji(int(c)))
 
-    # 形態素解析
-    for token in t.tokenize(sentence):
-        s = token.reading
+        # 形態素解析
+        for token in t.tokenize(sentence):
+            s = token.reading
 
-        if s == '*':
-            # 読みがわからないトークン
-            if re.match('[ぁ-んァ-ンー]', token.surface) != None:
-                katakana += token.surface
-        else:
-            # 読みがわかるトークン
-            if re.match('[ァ-ン]', s) != None:
-                katakana += s
+            if s == '*':
+                # 読みがわからないトークン
+                if re.match('[ぁ-んァ-ンー]', token.surface) != None:
+                    katakana += token.surface
+            else:
+                # 読みがわかるトークン
+                if re.match('[ァ-ン]', s) != None:
+                    katakana += s
 
     if rm_ltu:
         katakana = katakana.replace('ッ', '')
@@ -202,13 +209,20 @@ def to_katakana(sentence, rm_ltu=False):
     return katakana
 
 
-def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
+def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False, ignore_sensitive=False):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
     n：文字を分割する単位
     rm_ltu：「っ」を削除するかどうか
     '''
+
+    if ignore_sensitive:
+        res = docomo.jetrun(sentence)
+        if docomo.check_health(res):
+            # APIが利用可
+            if 'quotients' in res.json():
+                return False
 
     if not rm_hyphen:
         tmp = ''
