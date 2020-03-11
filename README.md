@@ -27,7 +27,7 @@ Automatically determines whether a posted sentence is pun, and if true, gives a 
 ## Usage
 ### Learning
 ```sh
-$ python train.py
+$ ./train.py
 ```
 ### Django
 #### Run Server
@@ -65,6 +65,11 @@ $ pip install --upgrade pip
 $ pip install -r requirements.txt
 ```
 
+### Set tokens
+```sh
+$ echo "your docomo token" >> config/docomo
+$ echo "your line token" >> config/line_token
+```
 
 ## References
 

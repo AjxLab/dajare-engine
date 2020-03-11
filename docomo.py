@@ -9,7 +9,7 @@ import json
 import datetime
 
 
-APIKEY = open('config/docomo').read().strip()
+APIKEY = open('config/docomo_token').read().strip()
 LINE   = open('config/line_token').read().strip()
 
 
