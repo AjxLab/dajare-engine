@@ -18,6 +18,7 @@ def joke_judge(request):
         'Content-Type':'application/json'
     query：
         joke: String,
+        ignore_sensitive: Number,
     response：
         {
             is_joke: Boolean,
@@ -35,8 +36,14 @@ def joke_judge(request):
     if not 'joke' in params:
         return JsonResponse({'is_joke': None, 'status': 'NG'})
 
+    ignore_sensitive = None
+    if 'ignore_sensitive' in params:
+        ignore_sensitive = bool(int(params['ignore_sensitive']))
+    else:
+        ignore_sensitive = True
+
     ret = {
-        'is_joke': engine.is_joke(params['joke']),
+        'is_joke': engine.is_joke(params['joke'], ignore_sensitive=ignore_sensitive),
         'status': 'OK'
     }
     return JsonResponse(ret)
