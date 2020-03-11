@@ -8,9 +8,12 @@ import requests
 import json
 import datetime
 
-
-APIKEY = open('config/docomo_token').read().strip()
-LINE   = open('config/line_token').read().strip()
+try:
+    APIKEY = open('config/docomo_token').read().strip()
+    LINE   = open('config/line_token').read().strip()
+except:
+    print('Configuration file does not exist')
+    exit(0)
 
 
 def goo(joke):
