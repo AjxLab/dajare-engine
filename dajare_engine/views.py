@@ -22,6 +22,7 @@ def joke_judge(request):
     response：
         {
             is_joke: Boolean,
+            include_sensitive: Boolean,
             status: String,
         }
     '''
@@ -36,14 +37,27 @@ def joke_judge(request):
     if not 'joke' in params:
         return JsonResponse({'is_joke': None, 'status': 'NG'})
 
-    ignore_sensitive = None
     if 'ignore_sensitive' in params:
         ignore_sensitive = bool(int(params['ignore_sensitive']))
     else:
         ignore_sensitive = True
 
+    # ダジャレ判定
+    is_joke = engine.is_joke(params['joke'])
+
+    # センシティブな情報が含まれているか
+    include_sensitive = False
+    res = engine.docomo.jetrun(params['joke'])
+    if engine.docomo.check_health(res):
+        if 'quotients' in res.json():
+            include_sensitive = True
+
+    if ignore_sensitive and include_sensitive:
+        is_joke = False
+
     ret = {
-        'is_joke': engine.is_joke(params['joke'], ignore_sensitive=ignore_sensitive),
+        'is_joke': is_joke,
+        'include_sensitive': include_sensitive,
         'status': 'OK'
     }
     return JsonResponse(ret)

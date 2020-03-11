@@ -209,21 +209,13 @@ def to_katakana(sentence, rm_ltu=False):
     return katakana
 
 
-def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False, ignore_sensitive=False):
+def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
     n：文字を分割する単位
     rm_ltu：「っ」を削除するかどうか
     '''
-
-    if ignore_sensitive:
-        res = docomo.jetrun(sentence)
-        if docomo.check_health(res):
-            # APIが利用可
-            if 'quotients' in res.json():
-                return False
-
     if not rm_hyphen:
         tmp = ''
         for c in sentence:
