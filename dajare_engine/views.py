@@ -29,12 +29,15 @@ def joke_judge(request):
 
     # GET以外でアクセス -> return {}
     if request.method != 'GET':
-        return JsonResponse({})
+        return JsonResponse({'status': 'NG'})
     # クエリを指定されていない -> return {}
     if not 'joke' in params:
-        return JsonResponse({})
+        return JsonResponse({'status': 'NG'})
 
-    ret = {'is_joke': engine.is_joke(params['joke'])}
+    ret = {
+        'is_joke': engine.is_joke(params['joke']),
+        'status': 'OK'
+    }
     return JsonResponse(ret)
 
 
@@ -62,12 +65,15 @@ def joke_evaluate(request):
 
     # GET以外でアクセス -> return {}
     if request.method != 'GET':
-        return JsonResponse({})
+        return JsonResponse({'status': 'NG'})
     # クエリを指定されていない -> return {}
     if not 'joke' in params:
-        return JsonResponse({})
+        return JsonResponse({'status': 'NG'})
 
-    ret = {'score': model.predict(params['joke'])}
+    ret = {
+        'score': model.predict(params['joke']),
+        'status': 'OK'
+    }
     return JsonResponse(ret)
 
 
@@ -94,10 +100,13 @@ def joke_reading(request):
 
     # GET以外でアクセス -> return {}
     if request.method != 'GET':
-        return JsonResponse({})
+        return JsonResponse({'status': 'NG'})
     # クエリを指定されていない -> return {}
     if not 'joke' in params:
-        return JsonResponse({})
+        return JsonResponse({'status': 'NG'})
 
-    ret = {'reading': engine.to_katakana(params['joke'])}
+    ret = {
+        'reading': engine.to_katakana(params['joke']),
+        'status': 'OK'
+    }
     return JsonResponse(ret)
