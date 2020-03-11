@@ -14,10 +14,10 @@ LINE   = open('config/line_token').read().strip()
 
 
 def goo(joke):
-    ## -----*----- 形態素解析 -----*----- ##
-    url = "https://api.apigw.smt.docomo.ne.jp/gooLanguageAnalysis/v1/morph?APIKEY={}".format( APIKEY )
+    ## -----*----- カタカナ化 -----*----- ##
+    url = "https://api.apigw.smt.docomo.ne.jp/gooLanguageAnalysis/v1/hiragana?APIKEY={}".format( APIKEY )
     header = { 'Content-Type': 'application/json' }
-    data = { 'sentence': joke }
+    data = { 'sentence': joke, 'output_type': 'katakana' }
 
     res = requests.post(url, headers=header, data=json.dumps(data))
 
@@ -62,5 +62,3 @@ def check_health(res):
 if __name__ == '__main__':
     print(goo('布団が吹っ飛んだ'))
     print(jetrun('布団が吹っ飛んだ'))
-
-    check_health(jetrun('布団が吹っ飛んだ'))

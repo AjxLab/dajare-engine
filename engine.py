@@ -172,23 +172,30 @@ def to_katakana(sentence, rm_ltu=False):
     '''
     katakana = ''
 
-    # 数字 -> 漢数字
-    while re.match('\d+', sentence):
-        c = re.match('\d+', sentence).group()
-        sentence = sentence.replace(c, int2kanji(int(c)))
+    res = docomo.goo(sentence)
+    if docomo.check_health(res):
+        print(res.json())
+        tokens = res.json()['word_list'][0]
+        for token in tokens:
+            katakana += token[2]
+    else:
+        # 数字 -> 漢数字
+        while re.match('\d+', sentence):
+            c = re.match('\d+', sentence).group()
+            sentence = sentence.replace(c, int2kanji(int(c)))
 
-    # 形態素解析
-    for token in t.tokenize(sentence):
-        s = token.reading
+        # 形態素解析
+        for token in t.tokenize(sentence):
+            s = token.reading
 
-        if s == '*':
-            # 読みがわからないトークン
-            if re.match('[ぁ-んァ-ンー]', token.surface) != None:
-                katakana += token.surface
-        else:
-            # 読みがわかるトークン
-            if re.match('[ァ-ン]', s) != None:
-                katakana += s
+            if s == '*':
+                # 読みがわからないトークン
+                if re.match('[ぁ-んァ-ンー]', token.surface) != None:
+                    katakana += token.surface
+            else:
+                # 読みがわかるトークン
+                if re.match('[ァ-ン]', s) != None:
+                    katakana += s
 
     if rm_ltu:
         katakana = katakana.replace('ッ', '')
