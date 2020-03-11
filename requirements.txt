@@ -6,3 +6,4 @@ kanjize==0.1.0
 django-sslserver
 django-cors-headers
 request
+pyyaml
