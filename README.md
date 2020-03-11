@@ -67,8 +67,8 @@ $ pip install -r requirements.txt
 
 ### Set tokens
 ```sh
-$ echo "your docomo token" >> config/docomo
-$ echo "your line token" >> config/line_token
+$ echo "your docomo token" > config/docomo_token
+$ echo "your line token" > config/line_token
 ```
 
 ## References
