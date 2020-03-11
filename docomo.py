@@ -9,8 +9,8 @@ import json
 import yaml
 
 
-yml_data = yaml.load(open('config/docomo.yml'))
-APIKEY = yml_data['key']
+APIKEY =yaml.load(open('config/docomo.yml'))['key']
+GMAIL  = yaml.load(open('config/gmail.yml'))
 
 
 def goo(joke):
@@ -24,7 +24,6 @@ def goo(joke):
     return res
 
 
-
 def jetrun(joke):
     ## -----*----- センシティブチェック -----*----- ##
     url = 'https://api.apigw.smt.docomo.ne.jp/truetext/v1/sensitivecheck?APIKEY={}'.format( APIKEY )
@@ -34,6 +33,17 @@ def jetrun(joke):
     res = requests.post(url, headers=header, data=body)
 
     return res
+
+
+def check_health(res):
+    ## -----*----- ステータスチェック -----*----- ##
+    code = res.status_code
+    try:
+        assert code == requests.codes.ok
+    except:
+        return False
+
+    return True
 
 
 if __name__ == '__main__':

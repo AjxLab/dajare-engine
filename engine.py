@@ -12,7 +12,10 @@ from janome.tokenizer import Tokenizer
 from kanjize import int2kanji
 from tqdm import tqdm
 import json
+import yaml
 import math
+import requests
+import docomo
 
 
 class Evaluate(object):
