@@ -4,11 +4,14 @@ docomo API
 
 import requests
 import json
+import yaml
 
 
-APIKEY = ''
+yml_data = yaml.load(open('config/docomo.yml'))
+APIKEY = yml_data['key']
+print(APIKEY)
 
-def goo(joke):
+def goo(joke, apikey):
     ## -----*----- Powered by goo -----*----- ##
     # 形態素解析
 
