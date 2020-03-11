@@ -209,14 +209,55 @@ def to_katakana(sentence, rm_ltu=False):
     return katakana
 
 
-def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
+def judge_joke(katakana, n=3):
+    ## -----*----- 判定 -----*----- ##
+    # 1文字ずつずらしてn文字の要素を作成
+    col = []
+    for i in range(len(katakana)-n+1):
+        col.append(katakana[i:(i+n)])
+
+    if len(set(col)) != len(col):
+        return True
+    else:
+        return False
+
+
+def hyphen_to_vowel(katakana):
+    ## -----*----- 'ー'を母音に変換 -----*----- ##
+    vowel_map =\
+        [
+            ['ア', 'カサタナハマヤラワ'],
+            ['イ', 'キシチニヒミリ'],
+            ['ウ', 'クスツヌフムユル'],
+            ['エ', 'ケセテネヘメレ'],
+            ['オ', 'コソトノホモヨロヲ'],
+        ]
+
+    ret = ''
+    for i in range(len(katakana)):
+        if i==0:
+            if katakana[i] != 'ー':
+                ret += katakana[i]
+            continue
+
+        c_match = ''
+        for pattern in vowel_map:
+            if katakana[i-1] in pattern[1]:
+                c_match = pattern[0]
+
+        ret += c_match
+
+    return ret
+
+
+def is_joke(sentence, n=3, first=True):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
     n：文字を分割する単位
     rm_ltu：「っ」を削除するかどうか
     '''
-    if not rm_hyphen:
+    if first:
         tmp = ''
         for c in sentence:
             if len(tmp) < 2:
@@ -227,40 +268,37 @@ def is_joke(sentence, n=3, rm_hyphen=False, rm_ltu=False):
                 tmp += c
         sentence = tmp
 
-    katakana = to_katakana(sentence, rm_ltu)
+        katakana = to_katakana(sentence)
+    else:
+        katakana = sentence
 
-    # 1文字ずつずらしてn文字の要素を作成
-    col = []
-    for i in range(len(katakana)-n+1):
-        col.append(katakana[i:(i+n)])
-
-    if len(set(col)) != len(col):
+    if judge_joke(katakana):
         return True
     else:
-        if not rm_hyphen:
-            if 'ー' in sentence:
-                return is_joke(sentence.replace('ー', ''), rm_hyphen=True)
-        if not rm_ltu:
-            if 'っ' in sentence or 'ッ' in sentence:
-                if is_joke(sentence, rm_ltu=True):
-                    return True
-                else:
-                    return is_joke(sentence.replace('っ', '').replace('ッ', ''))
+        if 'ー' in katakana:
+            # 'ー'を削除
+            if is_joke(katakana.replace('ー', ''), first=False):
+                return True
+            # 'ー'を直前文字の母音に変換
+            if is_joke(hyphen_to_vowel(katakana), first=False):
+                return True
 
-        return False
+        if 'ッ' in sentence or 'っ' in sentence:
+            # 'っ'を削除
+            if is_joke(to_katakana(sentence, rm_ltu=True), first=False):
+                return True
+
+    return False
 
 
 if __name__ == '__main__':
     jokes = []
-    jokes.append('遠距離恋愛')
-    jokes.append('この皿はサラサラしてる')
-    jokes.append('筋トレで金獲れ')
     jokes.append('布団が吹っ飛んだ')
     jokes.append('つくねがくっつくね')
-    jokes.append('布団が吹っ飛んだ')
     jokes.append('ソースを読んで納得したプログラマ「そーすね」')
     jokes.append('太古の太閤が太鼓で対抗')
     jokes.append('スロットで金すろーと')
+    jokes.append('ニューヨークで入浴')
 
     model = Evaluate(False)
 
