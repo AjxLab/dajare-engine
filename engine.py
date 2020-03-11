@@ -174,11 +174,10 @@ def to_katakana(sentence, rm_ltu=False):
 
     res = docomo.goo(sentence)
     if docomo.check_health(res):
-        print(res.json())
-        tokens = res.json()['word_list'][0]
-        for token in tokens:
-            katakana += token[2]
+        # APIが利用可
+        katakana = res.json()['converted'].replace(' ', '')
     else:
+        # APIが利用不可
         # 数字 -> 漢数字
         while re.match('\d+', sentence):
             c = re.match('\d+', sentence).group()
