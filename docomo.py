@@ -50,7 +50,6 @@ def check_health(res):
         message = message.replace('{timestamp}', timestamp)
         message = message.replace('{code}', str(code))
 
-
         param = {'message': message}
         requests.post(url, headers=header, params=param)
 
