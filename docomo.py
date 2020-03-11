@@ -6,11 +6,11 @@ docomo API
 
 import requests
 import json
-import yaml
+import datetime
 
 
-APIKEY =yaml.load(open('config/docomo.yml'))['key']
-GMAIL  = yaml.load(open('config/gmail.yml'))
+APIKEY = open('config/docomo').read().strip()
+LINE   = open('config/line_token').read().strip()
 
 
 def goo(joke):
@@ -41,6 +41,19 @@ def check_health(res):
     try:
         assert code == requests.codes.ok
     except:
+        url = "https://notify-api.line.me/api/notify"
+        header = {'Authorization': 'Bearer ' + LINE}
+
+        # send message
+        message = open('config/alert.txt', 'r').read()
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        message = message.replace('{timestamp}', timestamp)
+        message = message.replace('{code}', str(code))
+
+
+        param = {'message': message}
+        requests.post(url, headers=header, params=param)
+
         return False
 
     return True
@@ -49,3 +62,5 @@ def check_health(res):
 if __name__ == '__main__':
     print(goo('布団が吹っ飛んだ'))
     print(jetrun('布団が吹っ飛んだ'))
+
+    check_health(jetrun('布団が吹っ飛んだ'))
