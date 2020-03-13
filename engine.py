@@ -176,6 +176,7 @@ def to_katakana(sentence, rm_ltu=False):
     if docomo.check_health(res):
         # APIが利用可
         katakana = res.json()['converted'].replace(' ', '')
+        katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
     else:
         # APIが利用不可
         # 数字 -> 漢数字
@@ -189,11 +190,11 @@ def to_katakana(sentence, rm_ltu=False):
 
             if s == '*':
                 # 読みがわからないトークン
-                if re.match('[ぁ-んァ-ンー]', token.surface) != None:
+                if re.match('[ぁ-ゔァ-ヴー]', token.surface) != None:
                     katakana += token.surface
             else:
                 # 読みがわかるトークン
-                if re.match('[ァ-ン]', s) != None:
+                if re.match('[ァ-ヴ]', s) != None:
                     katakana += s
 
     if rm_ltu:
