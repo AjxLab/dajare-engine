@@ -176,7 +176,6 @@ def to_katakana(sentence, rm_ltu=False):
     if docomo.check_health(res):
         # APIが利用可
         katakana = res.json()['converted'].replace(' ', '')
-        katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
     else:
         # APIが利用不可
         # 数字 -> 漢数字
@@ -206,6 +205,8 @@ def to_katakana(sentence, rm_ltu=False):
     ]
     for i in range(len(pair[0])):
         katakana = katakana.replace(pair[0][i], pair[1][i])
+
+    katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
 
     return katakana
 
