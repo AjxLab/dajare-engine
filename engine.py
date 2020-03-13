@@ -189,11 +189,11 @@ def to_katakana(sentence, rm_ltu=False):
 
             if s == '*':
                 # 読みがわからないトークン
-                if re.match('[ぁ-んァ-ンー]', token.surface) != None:
+                if re.match('[ぁ-ゔァ-ヴー]', token.surface) != None:
                     katakana += token.surface
             else:
                 # 読みがわかるトークン
-                if re.match('[ァ-ン]', s) != None:
+                if re.match('[ァ-ヴ]', s) != None:
                     katakana += s
 
     if rm_ltu:
@@ -205,6 +205,8 @@ def to_katakana(sentence, rm_ltu=False):
     ]
     for i in range(len(pair[0])):
         katakana = katakana.replace(pair[0][i], pair[1][i])
+
+    katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
 
     return katakana
 
