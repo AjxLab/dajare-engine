@@ -237,9 +237,11 @@ def hyphen_to_vowel(katakana):
 
     ret = ''
     for i in range(len(katakana)):
+        if katakana[i] != 'ー':
+            ret += katakana[i]
+            continue
         if i==0:
-            if katakana[i] != 'ー':
-                ret += katakana[i]
+            ret += katakana[i]
             continue
 
         c_match = ''
