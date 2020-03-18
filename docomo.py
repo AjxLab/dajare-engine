@@ -59,6 +59,8 @@ def check_health(res, alert=True):
                 timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 message = message.replace('{timestamp}', timestamp)
                 message = message.replace('{code}', str(code))
+                message = message.replace('{url}', res.url)
+                message = message.replace('{json}', str(res.json()))
 
                 param = {'message': message}
                 requests.post(url, headers=header, params=param)
