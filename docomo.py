@@ -47,14 +47,17 @@ def check_health(res):
         url = "https://notify-api.line.me/api/notify"
         header = {'Authorization': 'Bearer ' + LINE}
 
-        # send message
-        message = open('config/alert.txt', 'r').read()
-        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        message = message.replace('{timestamp}', timestamp)
-        message = message.replace('{code}', str(code))
+        try:
+            # send message
+            message = open('config/alert.txt', 'r').read()
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            message = message.replace('{timestamp}', timestamp)
+            message = message.replace('{code}', str(code))
 
-        param = {'message': message}
-        requests.post(url, headers=header, params=param)
+            param = {'message': message}
+            requests.post(url, headers=header, params=param)
+        except:
+            pass
 
         return False
 
