@@ -25,7 +25,7 @@ def goo(joke):
 
     for key in APIKEY:
         res = requests.post(url.format(key), headers=header, data=json.dumps(data))
-        if check_health(res): return res
+        if check_health(res, False): return res
 
     return res
 
@@ -38,12 +38,12 @@ def jetrun(joke):
 
     for key in APIKEY:
         res = requests.post(url.format(key), headers=header, data=body)
-        if check_health(res): return res
+        if check_health(res, False): return res
 
     return res
 
 
-def check_health(res):
+def check_health(res, alert=True):
     ## -----*----- ステータスチェック -----*----- ##
     code = res.status_code
     try:
@@ -54,13 +54,14 @@ def check_health(res):
 
         try:
             # send message
-            message = open('config/alert.txt', 'r').read()
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            message = message.replace('{timestamp}', timestamp)
-            message = message.replace('{code}', str(code))
+            if alert:
+                message = open('config/alert.txt', 'r').read()
+                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                message = message.replace('{timestamp}', timestamp)
+                message = message.replace('{code}', str(code))
 
-            param = {'message': message}
-            requests.post(url, headers=header, params=param)
+                param = {'message': message}
+                requests.post(url, headers=header, params=param)
         except:
             pass
 
