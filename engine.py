@@ -10,6 +10,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
 from janome.tokenizer import Tokenizer
 from kanjize import int2kanji
+import jaconv
 from tqdm import tqdm
 import json
 import math
@@ -109,7 +110,7 @@ class Evaluate(object):
 
         # データセットを作成
         for joke in tqdm(jokes):
-            katakana = to_katakana(joke['joke'])
+            katakana = to_katakana(joke['joke'])[0]
             vec = [ord(x) for x in katakana]
             vec = vec[:max_length]
             if len(vec) < max_length:
@@ -143,7 +144,7 @@ class Evaluate(object):
 
     def predict(self, sentence, max_length=100):
         ## -----*----- 推論 -----*----- ##
-        katakana = to_katakana(sentence)
+        katakana = to_katakana(sentence)[0]
         vec = [ord(x) for x in katakana]
         vec = vec[:max_length]
         if len(vec) < max_length:
@@ -164,7 +165,7 @@ class Evaluate(object):
 t = Tokenizer()
 
 
-def to_katakana(sentence, rm_ltu=False):
+def to_katakana(sentence):
     ## -----*----- カタカナ変換 -----*----- ##
     '''
     sentence：判定対象の文
@@ -190,14 +191,13 @@ def to_katakana(sentence, rm_ltu=False):
             if s == '*':
                 # 読みがわからないトークン
                 if re.match('[ぁ-ゔァ-ヴー]', token.surface) != None:
-                    katakana += token.surface
+                    katakana += jaconv.hira2kata(token.surface)
             else:
                 # 読みがわかるトークン
                 if re.match('[ァ-ヴ]', s) != None:
                     katakana += s
 
-    if rm_ltu:
-        katakana = katakana.replace('ッ', '')
+    katakana_rm_ltu = katakana.replace('ッ', '')
 
     pair = [
         'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂ',
@@ -208,7 +208,7 @@ def to_katakana(sentence, rm_ltu=False):
 
     katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
 
-    return katakana
+    return katakana, katakana_rm_ltu
 
 
 def judge_joke(katakana, n=3):
@@ -240,8 +240,8 @@ def hyphen_to_vowel(katakana):
         if katakana[i] != 'ー':
             ret += katakana[i]
             continue
-        if i==0:
-            ret += katakana[i]
+        if i==0 and katakana[0]!='ー':
+            ret += katakana[0]
             continue
 
         c_match = ''
@@ -252,6 +252,22 @@ def hyphen_to_vowel(katakana):
         ret += c_match
 
     return ret
+
+
+def ou_to_hyphen(katakana):
+    ## -----*----- 「ou」の音の処理 -----*----- ##
+    ou_map =\
+        [
+            'オウ', 'コウ', 'ソウ', 'トウ', 'ノウ',
+            'ホウ', 'モウ', 'ヨウ', 'ロウ', 'ヲウ',
+            'ゴウ', 'ゾウ', 'ドウ', 'ボウ', 'ポウ',
+        ]
+
+    # 「ou」 -> 「oー」
+    for ou in ou_map:
+        katakana = katakana.replace(ou, ou[0]+'ー')
+
+    return katakana
 
 
 def is_joke(sentence, n=3, first=True):
@@ -272,9 +288,10 @@ def is_joke(sentence, n=3, first=True):
                 tmp += c
         sentence = tmp
 
-        katakana = to_katakana(sentence)
+        katakana, katakana_rm_ltu = to_katakana(sentence)
     else:
-        katakana = sentence
+        katakana = ou_to_hyphen(sentence)
+        katakana_rm_ltu = katakana
 
     if judge_joke(katakana):
         return True
@@ -287,9 +304,9 @@ def is_joke(sentence, n=3, first=True):
             if is_joke(hyphen_to_vowel(katakana), first=False):
                 return True
 
-        if 'ッ' in sentence or 'っ' in sentence:
+        if first and ('ッ' in sentence or 'っ' in sentence):
             # 'っ'を削除
-            if is_joke(to_katakana(sentence, rm_ltu=True), first=False):
+            if is_joke(katakana_rm_ltu, first=False):
                 return True
 
     return False
@@ -297,8 +314,9 @@ def is_joke(sentence, n=3, first=True):
 
 if __name__ == '__main__':
     jokes = []
-    jokes.append('Gmailで爺滅入る')
     jokes.append('布団が吹っ飛んだ')
+    jokes.append('紅茶が凍っちゃった')
+    jokes.append('Gmailで爺滅入る')
     jokes.append('つくねがくっつくね')
     jokes.append('ソースを読んで納得したプログラマ「そーすね」')
     jokes.append('太古の太閤が太鼓で対抗')
@@ -317,5 +335,5 @@ if __name__ == '__main__':
         if judge:
             print('    - ダジャレ評価：{} ({})'.format(star, score))
         else:
-            print('    - カタカナ変換：%s' % to_katakana(joke))
+            print('    - カタカナ変換：%s' % to_katakana(joke)[0])
 
