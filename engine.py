@@ -163,6 +163,14 @@ class Evaluate(object):
 
 
 t = Tokenizer()
+vowel_map =\
+    [
+        ['ア', 'カサタナハマヤラワガザダバパ'],
+        ['イ', 'キシチニヒミリギジヂビピ'],
+        ['ウ', 'クスツヌフムユルグズヅブプ'],
+        ['エ', 'ケセテネヘメレゲゼデベペ'],
+        ['オ', 'コソトノホモヨロヲゴゾドボポ'],
+    ]
 
 
 def to_katakana(sentence):
@@ -197,8 +205,16 @@ def to_katakana(sentence):
                 if re.match('[ァ-ヴ]', s) != None:
                     katakana += s
 
+
+    # 母音が連続 -> 「母音ー」とする
+    for pattern in vowel_map:
+        for c in pattern[1]:
+            katakana = katakana.replace(c+pattern[0], c+'ー')
+
+    # 「ッ」を削除
     katakana_rm_ltu = katakana.replace('ッ', '')
 
+    # 小文字を大文字に
     pair = [
         'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂ',
         'アイウエオツヤユヨワアイウエオツヤユヨワジ'
@@ -226,15 +242,6 @@ def judge_joke(katakana, n=3):
 
 def hyphen_to_vowel(katakana):
     ## -----*----- 'ー'を母音に変換 -----*----- ##
-    vowel_map =\
-        [
-            ['ア', 'カサタナハマヤラワガザダバパ'],
-            ['イ', 'キシチニヒミリギジヂビピ'],
-            ['ウ', 'クスツヌフムユルグズヅブプ'],
-            ['エ', 'ケセテネヘメレゲゼデベペ'],
-            ['オ', 'コソトノホモヨロヲゴゾドボポ'],
-        ]
-
     ret = ''
     for i in range(len(katakana)):
         if katakana[i] != 'ー':
