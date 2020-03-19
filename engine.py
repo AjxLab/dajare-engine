@@ -116,12 +116,6 @@ class Evaluate(object):
             if len(vec) < max_length:
                 vec += ([0] * (max_length - len(vec)))
 
-            '''
-            if joke['score'] > 2.5:
-                score = 1.0
-            else:
-                score = 0.0
-            '''
             score = int(np.round(joke['score']))
             if score < 0: score = 0
             if score > 4: score = 4
@@ -177,7 +171,6 @@ def to_katakana(sentence):
     ## -----*----- カタカナ変換 -----*----- ##
     '''
     sentence：判定対象の文
-    rm_ltu：「っ」を削除するかどうか
     '''
     katakana = ''
 
@@ -188,23 +181,19 @@ def to_katakana(sentence):
     else:
         # APIが利用不可
         # 数字 -> 漢数字
-        while re.match('\d+', sentence):
-            c = re.match('\d+', sentence).group()
+        for c in re.findall('\d+', sentence):
             sentence = sentence.replace(c, int2kanji(int(c)))
 
         # 形態素解析
         for token in t.tokenize(sentence):
-            s = token.reading
+            reading = token.reading
 
-            if s == '*':
+            if reading == '*':
                 # 読みがわからないトークン
-                if re.match('[ぁ-ゔァ-ヴー]', token.surface) != None:
-                    katakana += jaconv.hira2kata(token.surface)
+                katakana += jaconv.hira2kata(token.surface)
             else:
                 # 読みがわかるトークン
-                if re.match('[ァ-ヴ]', s) != None:
-                    katakana += s
-
+                katakana += reading
 
     # 母音が連続 -> 「母音ー」とする
     for pattern in vowel_map:
@@ -214,15 +203,9 @@ def to_katakana(sentence):
     # 「ッ」を削除
     katakana_rm_ltu = katakana.replace('ッ', '')
 
-    # 小文字を大文字に
-    pair = [
-        'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂ',
-        'アイウエオツヤユヨワアイウエオツヤユヨワジ'
-    ]
-    for i in range(len(pair[0])):
-        katakana = katakana.replace(pair[0][i], pair[1][i])
-
+    # カタカナのみ抽出
     katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
+    katakana_rm_ltu= ''.join(re.findall('[ァ-ヴー]+', katakana_rm_ltu))
 
     return katakana, katakana_rm_ltu
 
@@ -282,7 +265,7 @@ def is_joke(sentence, n=3, first=True):
     '''
     sentence：判定対象の文
     n：文字を分割する単位
-    rm_ltu：「っ」を削除するかどうか
+    first：１回目の検証かどうか
     '''
     if first:
         tmp = ''
@@ -296,6 +279,16 @@ def is_joke(sentence, n=3, first=True):
         sentence = tmp
 
         katakana, katakana_rm_ltu = to_katakana(sentence)
+
+        # 文字置換
+        pair = [
+            'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ',
+            'アイウエオツヤユヨワアイウエオツヤユヨワジカキクケコサシスセソタチツテトハヒフヘホハヒフヘホ'
+        ]
+        for i in range(len(pair[0])):
+            katakana = katakana.replace(pair[0][i], pair[1][i])
+            katakana_rm_ltu = katakana_rm_ltu.replace(pair[0][i], pair[1][i])
+
     else:
         katakana = ou_to_hyphen(sentence)
         katakana_rm_ltu = katakana
