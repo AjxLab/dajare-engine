@@ -48,6 +48,7 @@ def joke_judge(request):
         if 'quotients' in res.json():
             include_sensitive = True
             sensitive_tags = [col['cluster_name'] for col in res.json()['quotients']]
+            sensitive_tags = list(set(':'.join(sensitive_tags).replace('その他', '').split(':')))
 
     ret = {
         'is_joke': is_joke,
