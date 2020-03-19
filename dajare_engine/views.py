@@ -121,7 +121,7 @@ def joke_reading(request):
         return JsonResponse({'reading': None, 'status': 'NG'})
 
     ret = {
-        'reading': engine.to_katakana(params['joke']),
+        'reading': engine.to_katakana(params['joke'])[0],
         'status': 'OK'
     }
     return JsonResponse(ret)
