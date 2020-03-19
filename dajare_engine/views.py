@@ -22,7 +22,7 @@ def joke_judge(request):
         {
             is_joke: Boolean,
             include_sensitive: Boolean,
-            sentisive_tags: [String]
+            sensitive_tags: [String]
             status: String,
         }
     '''
@@ -42,17 +42,17 @@ def joke_judge(request):
 
     # センシティブな情報が含まれているか
     include_sensitive = False
-    sentisive_tags = []
+    sensitive_tags = []
     res = engine.docomo.jetrun(params['joke'])
     if engine.docomo.check_health(res):
         if 'quotients' in res.json():
             include_sensitive = True
-            sentisive_tags = [col['cluster_name'] for col in res.json()['quotients']]
+            sensitive_tags = [col['cluster_name'] for col in res.json()['quotients']]
 
     ret = {
         'is_joke': is_joke,
         'include_sensitive': include_sensitive,
-        'sentisive_tags': sentisive_tags,
+        'sensitive_tags': sensitive_tags,
         'status': 'OK'
     }
     return JsonResponse(ret)
