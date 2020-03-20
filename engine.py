@@ -170,9 +170,10 @@ class Evaluate(object):
             vec += ([0] * (max_length - len(vec)))
 
         pred = self.__model.predict(np.array([vec]))[0]
-        bias = np.array(pred) * np.array([1.0, 0.5, 0.0, -0.5, -1.0])
-        pred *= np.array([23200.0, 2320.0, 17.1, 1.0, 193.3])
-        score = np.argmax(pred) + np.sum(bias) + 1.0
+        bias = np.array([-1.0, -0.5, 0.0, 0.5, 1.0])
+        bias[np.argmax(pred)] = 0.0
+
+        score = np.argmax(pred) + np.sum(pred*bias) + 1.0
 
         if score < 1: score = 1.0
         if score > 5: score = 5.0
@@ -199,11 +200,12 @@ def to_katakana(sentence):
     '''
     katakana = ''
 
-    res = docomo.goo(sentence)
-    if docomo.check_health(res):
-        # APIが利用可
-        katakana = res.json()['converted'].replace(' ', '')
-    else:
+    #res = docomo.goo(sentence)
+    #if docomo.check_health(res):
+    #    # APIが利用可
+    #    katakana = res.json()['converted'].replace(' ', '')
+    #else:
+    if 0==0:
         # APIが利用不可
         # 数字 -> 漢数字
         for c in re.findall('\d+', sentence):
