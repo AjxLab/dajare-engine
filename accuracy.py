@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 '''
 ダジャレ判定の精度を計測
@@ -11,15 +10,11 @@ import json
 import glob
 import numpy as np
 from tqdm import tqdm
+from multiprocessing import Pool
 
 
-
-jokes = []
-for file in glob.glob('data/*.json'):
-    jokes.extend(json.load(open(file, 'r')))
-
-# 判定モデルの計測
-if 'judge' in sys.argv:
+def measure_judge(jokes):
+    ## -----*----- 判定モデルの測定 -----*----- ##
     result = 0  # 正解数
     for joke in tqdm(jokes):
         try:
@@ -33,8 +28,9 @@ if 'judge' in sys.argv:
 
     print('精度：%f' % (result / len(jokes)))
 
-# 評価モデルの計測
-if 'evaluate' in sys.argv:
+
+def measure_evaluate(jokes):
+    ## -----*----- 評価モデルの測定 -----*----- ##
     model = engine.Evaluate(False)
     scores = []
     map_score = [0, 0, 0, 0, 0]
@@ -43,7 +39,7 @@ if 'evaluate' in sys.argv:
             score = model.predict(joke['joke'])
             scores.append(score)
             map_score[int(np.round(score))-1] += 1
-            #'''
+            '''
             star =  '★' * int(np.round(score))
             star += '☆' * (5-len(star))
             judge = engine.is_joke(joke['joke'])
@@ -51,8 +47,19 @@ if 'evaluate' in sys.argv:
             print('{}\n    - ダジャレ判定：{}'.format(joke['joke'], judge))
             if judge:
                 print('    - ダジャレ評価：{} ({})'.format(star, score))
-            #'''
+            '''
 
     print('最大値：{}，最小値：{}'.format(max(scores), min(scores)))
     print(list(100*np.array(map_score)/len(jokes)))
+
+
+if __name__ == '__main__':
+    jokes = []
+    for file in glob.glob('data/*.json'):
+        jokes.extend(json.load(open(file, 'r')))
+
+    if 'judge' in sys.argv:
+        measure_judge(jokes)
+    if 'evaluate' in sys.argv:
+        measure_evaluate(jokes)
 
