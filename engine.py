@@ -173,7 +173,7 @@ class Evaluate(object):
         bias = np.array([-1.0, -0.5, 0.0, 0.5, 1.0])
         bias[np.argmax(pred)] = 0.0
         bias = np.sum(pred * bias) * 10.0
-        pred *= np.array([6.9, 1.9, 0.12, 2.0, 0.6])
+        pred *= np.array([8.4, 0.7, 0.12, 2.3, 0.8])
 
         score = np.argmax(pred) + bias + 1.0
 
@@ -181,7 +181,6 @@ class Evaluate(object):
         if score > 5: score = 5.0; score += -bias
 
         return score
-
 
 
 t = Tokenizer()
@@ -202,12 +201,11 @@ def to_katakana(sentence):
     '''
     katakana = ''
 
-    #res = docomo.goo(sentence)
-    #if docomo.check_health(res):
-    #    # APIが利用可
-    #    katakana = res.json()['converted'].replace(' ', '')
-    #else:
-    if 0==0:
+    res = docomo.goo(sentence)
+    if docomo.check_health(res):
+        # APIが利用可
+        katakana = res.json()['converted'].replace(' ', '')
+    else:
         # APIが利用不可
         # 数字 -> 漢数字
         for c in re.findall('\d+', sentence):

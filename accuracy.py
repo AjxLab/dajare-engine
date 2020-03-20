@@ -39,7 +39,7 @@ if 'evaluate' in sys.argv:
     scores = []
     map_score = [0, 0, 0, 0, 0]
     for joke in tqdm(jokes):
-        if len(scores) > 300: break
+        #if len(scores) > 100: break
         if joke['is_joke']:
             score = model.predict(joke['joke'])
             scores.append(score)
