@@ -56,4 +56,5 @@ if 'evaluate' in sys.argv:
 
     print('最大値：{}，最小値：{}'.format(max(scores), min(scores)))
     print(list(100*np.array(map_score)/len(scores)))
+    print(map_score)
 

@@ -141,7 +141,7 @@ class Evaluate(object):
             if len(vec) < max_length:
                 vec += ([0] * (max_length - len(vec)))
 
-            score = int(np.round(joke['score'])) - 1.0
+            score = int(np.round(joke['score'])) - 1
             if score < 0: score = 0
             if score > 4: score = 4
 
@@ -172,13 +172,13 @@ class Evaluate(object):
         pred = self.__model.predict(np.array([vec]))[0]
         bias = np.array([-1.0, -0.5, 0.0, 0.5, 1.0])
         bias[np.argmax(pred)] = 0.0
-        bias = np.sum(pred * bias)
-        pred *= np.array([3.9, 1.15, 0.41, 1.35, 4.15])
+        bias = np.sum(pred * bias) * 10.0
+        pred *= np.array([6.9, 1.9, 0.12, 2.0, 0.6])
 
         score = np.argmax(pred) + bias + 1.0
 
-        if score < 1: score = 1.0
-        if score > 5: score = 5.0
+        if score < 1: score = 1.0; score += -bias
+        if score > 5: score = 5.0; score += -bias
 
         return score
 
