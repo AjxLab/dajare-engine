@@ -14,6 +14,7 @@ import jaconv
 from tqdm import tqdm
 import json
 import math
+import statistics
 import docomo
 
 
@@ -108,6 +109,30 @@ class Evaluate(object):
         jokes = []
         jokes = json.load(open('data/jokes.json', 'r'))
 
+        # 正規化
+        print('Normalizing...')
+        while True:
+            for i in range(len(jokes)):
+                jokes[i]['score'] += np.random.rand() - 0.5
+
+            ave = statistics.mean([j['score'] for j in jokes])
+            dev = statistics.pstdev([j['score'] for j in jokes])
+
+            for i in range(len(jokes)):
+                jokes[i]['score'] = 3 + (jokes[i]['score'] - ave) / dev
+
+            map_score = np.zeros(5)
+            for j in jokes:
+                if j['score'] < 1.0:  j['score'] = 1.0
+                if j['score'] > 5.0:  j['score'] = 5.0
+                map_score[int(np.round(j['score']))-1] += 1
+
+            flag = True
+            for col in 100 * map_score / len(jokes) /  np.array([7, 25, 36, 25, 7]):
+                if abs(1.0-col) > 0.1:
+                    flag = False
+            if flag:  break
+
         # データセットを作成
         for joke in tqdm(jokes):
             katakana = to_katakana(joke['joke'])[0]
@@ -116,7 +141,7 @@ class Evaluate(object):
             if len(vec) < max_length:
                 vec += ([0] * (max_length - len(vec)))
 
-            score = int(np.round(joke['score']))
+            score = int(np.round(joke['score'])) - 1.0
             if score < 0: score = 0
             if score > 4: score = 4
 
