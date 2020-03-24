@@ -44,7 +44,7 @@ if 'evaluate' in sys.argv:
             score = model.predict(joke['joke'])
             scores.append(score)
             map_score[int(np.round(score))-1] += 1
-            '''
+            #'''
             star =  '★' * int(np.round(score))
             star += '☆' * (5-len(star))
             judge = engine.is_joke(joke['joke'])
@@ -52,7 +52,7 @@ if 'evaluate' in sys.argv:
             print('{}\n    - ダジャレ判定：{}'.format(joke['joke'], judge))
             if judge:
                 print('    - ダジャレ評価：{} ({})'.format(star, score))
-            '''
+            #'''
 
     print('最大値：{}，最小値：{}'.format(max(scores), min(scores)))
     print(list(100*np.array(map_score)/len(scores)))

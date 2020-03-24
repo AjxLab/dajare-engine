@@ -177,8 +177,11 @@ class Evaluate(object):
 
         score = np.argmax(pred) + bias + 1.0
 
-        if score < 1: score = 1.0; score += -bias
-        if score > 5: score = 5.0; score += -bias
+        while score < 1.0 or score > 5.0:
+            if score < 1.0:
+                score += abs(bias*0.313)
+            if score > 5.0:
+                score -= abs(bias*0.313)
 
         return score
 
