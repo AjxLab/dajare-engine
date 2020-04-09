@@ -188,28 +188,23 @@ class Evaluate(object):
 
 
 t = Tokenizer()
-vowel_map =\
-    [
-        ['ア', 'アカサタナハマヤラワガザダバパ'],
-        ['イ', 'イキシチニヒミリギジヂビピ'],
-        ['ウ', 'ウクスツヌフムユルグズヅブプ'],
-        ['エ', 'エケセテネヘメレゲゼデベペ'],
-        ['オ', 'オコソトノホモヨロヲゴゾドボポ'],
-    ]
 
 
-def to_katakana(sentence):
+def to_katakana(sentence, use_api=True):
     ## -----*----- カタカナ変換 -----*----- ##
     '''
     sentence：判定対象の文
     '''
     katakana = ''
 
-    res = docomo.goo(sentence)
-    if docomo.check_health(res):
-        # APIが利用可
-        katakana = res.json()['converted'].replace(' ', '')
-    else:
+    # APIを利用
+    if use_api:
+        res = docomo.goo(sentence)
+        if docomo.check_health(res):
+            # APIが利用可
+            katakana = res.json()['converted'].replace(' ', '')
+    # APIを利用しない || APIが利用不可
+    if katakana == '':
         # APIが利用不可
         # 数字 -> 漢数字
         for c in re.findall('\d+', sentence):
@@ -277,12 +272,8 @@ def hyphen_to_vowel(katakana):
             ret += katakana[0]
             continue
 
-        c_match = ''
-        for pattern in vowel_map:
-            if katakana[i-1] in pattern[1]:
-                c_match = pattern[0]
-
-        ret += c_match
+        # 直前文字の母音を求める
+        ret += pyboin.text2boin(katakana[i-1])
 
     return ret
 
@@ -311,6 +302,7 @@ def is_joke(sentence, n=3, first=True):
     first：１回目の検証かどうか
     '''
     if first:
+        # 3文字以上連続した文字をユニーク化
         tmp = ''
         for c in sentence:
             if len(tmp) < 2:
@@ -321,12 +313,17 @@ def is_joke(sentence, n=3, first=True):
                 tmp += c
         sentence = tmp
 
+        # カタカナ変換
         katakana, katakana_rm_ltu = to_katakana(sentence)
 
+        # 空文字の場合 -> False
+        if katakana == '':
+            return False
+
         # 母音が連続 -> 「母音ー」とする
-        for pattern in vowel_map:
-            for c in pattern[1]:
-                katakana = katakana.replace(c+pattern[0], c+'ー')
+        for i in range(len(katakana)-1):
+            if pyboin.text2boin(katakana[i]) == pyboin.text2boin(katakana[i+1]):
+                katakana = katakana[:i+1] + 'ー' + katakana[i+2:]
 
         # 文字置換
         pair = [
@@ -370,7 +367,6 @@ if __name__ == '__main__':
     jokes.append('太古の太閤が太鼓で対抗')
     jokes.append('スロットで金すろーと')
     jokes.append('ニューヨークで入浴')
-    jokes.append('イケアにいけや')
 
     model = Evaluate(False)
 
