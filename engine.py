@@ -361,7 +361,6 @@ def is_joke(sentence, n=3, first=True):
 
 if __name__ == '__main__':
     jokes = []
-    jokes.append('暗号数字')
     jokes.append('布団が吹っ飛んだ')
     jokes.append('紅茶が凍っちゃった')
     jokes.append('Gmailで爺滅入る')
