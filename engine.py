@@ -11,6 +11,7 @@ from tensorflow.keras import Sequential
 from janome.tokenizer import Tokenizer
 from kanjize import int2kanji
 import jaconv
+import pyboin
 from tqdm import tqdm
 import json
 import math
@@ -225,11 +226,6 @@ def to_katakana(sentence):
                 # 読みがわかるトークン
                 katakana += reading
 
-    # 母音が連続 -> 「母音ー」とする
-    for pattern in vowel_map:
-        for c in pattern[1]:
-            katakana = katakana.replace(c+pattern[0], c+'ー')
-
     # 「ッ」を削除
     katakana_rm_ltu = katakana.replace('ッ', '')
 
@@ -242,7 +238,7 @@ def to_katakana(sentence):
 
 def judge_joke(katakana, n=3):
     ## -----*----- 判定 -----*----- ##
-    # 1文字ずつずらしてn文字の要素を作成
+    # Trigram
     col = []
     for i in range(len(katakana)-n+1):
         col.append(katakana[i:(i+n)])
@@ -250,7 +246,24 @@ def judge_joke(katakana, n=3):
     if len(set(col)) != len(col):
         return True
     else:
+        for i in range(len(col)):
+            for j in range(len(col)):
+                if i==j:  continue
+                # 2文字被り && 母音完全一致
+                if num_of_matching(col[i], col[j]) == 2 and pyboin.text2boin(col[i]) == pyboin.text2boin(col[j]):
+                    return True
+
         return False
+
+
+def num_of_matching(s1, s2):
+    ## -----*----- 文字列の一致数 -----*----- ##
+    num = 0
+    for i in range(len(s1)):
+        if s1[i] == s2[i]:
+            num += 1
+
+    return num
 
 
 def hyphen_to_vowel(katakana):
@@ -310,6 +323,11 @@ def is_joke(sentence, n=3, first=True):
 
         katakana, katakana_rm_ltu = to_katakana(sentence)
 
+        # 母音が連続 -> 「母音ー」とする
+        for pattern in vowel_map:
+            for c in pattern[1]:
+                katakana = katakana.replace(c+pattern[0], c+'ー')
+
         # 文字置換
         pair = [
             'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ',
@@ -352,6 +370,7 @@ if __name__ == '__main__':
     jokes.append('太古の太閤が太鼓で対抗')
     jokes.append('スロットで金すろーと')
     jokes.append('ニューヨークで入浴')
+    jokes.append('イケアにいけや')
 
     model = Evaluate(False)
 
