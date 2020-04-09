@@ -322,6 +322,8 @@ def is_joke(sentence, n=3, first=True):
 
         # 母音が連続 -> 「母音ー」とする
         for i in range(len(katakana)-1):
+            if not katakana[i+1] in 'アイウエオ':
+                continue
             if pyboin.text2boin(katakana[i]) == pyboin.text2boin(katakana[i+1]):
                 katakana = katakana[:i+1] + 'ー' + katakana[i+2:]
 
@@ -359,6 +361,7 @@ def is_joke(sentence, n=3, first=True):
 
 if __name__ == '__main__':
     jokes = []
+    jokes.append('暗号数字')
     jokes.append('布団が吹っ飛んだ')
     jokes.append('紅茶が凍っちゃった')
     jokes.append('Gmailで爺滅入る')
