@@ -19,19 +19,30 @@ for file in glob.glob('data/*.json'):
     jokes.extend(json.load(open(file, 'r')))
 
 # 判定モデルの計測
+miss = [['text', 'reading', 'is_dajare']]
+dump_csv = True
 if 'judge' in sys.argv:
     result = 0  # 正解数
     for joke in tqdm(jokes):
         try:
             if joke['is_joke'] == engine.is_joke(joke['joke']):
                 result += 1
-            #else:
-            #    print('判定に失敗：%s' % joke['joke'])
+            else:
+                miss.append(
+                    [joke['joke'], engine.to_katakana(joke['joke'])[0], str(joke['is_joke'])]
+                )
+                #print('判定に失敗：%s' % joke['joke'])
         except:
             raise ValueError('エラー発生：%s' % joke['joke'])
 
-
     print('精度：%f' % (result / len(jokes)))
+
+    # CSVに保存
+    if dump_csv:
+        with open('miss.csv', 'w') as f:
+            for row in miss:
+                f.write(','.join(row) + '\n')
+
 
 # 評価モデルの計測
 if 'evaluate' in sys.argv:
