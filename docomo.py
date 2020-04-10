@@ -13,7 +13,8 @@ try:
     if '' in APIKEY: APIKEY.remove('')
     LINE   = open('config/line_token').read().strip()
 except:
-    print('Configuration file does not exist')
+    print('\033[31mError\033[0m: Configuration file does not exist')
+    print('Please set config files under config/')
     exit(0)
 
 
