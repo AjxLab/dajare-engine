@@ -346,6 +346,8 @@ def is_joke(sentence, n=3, first=True, morphemes=[]):
         for i in range(len(pair[0])):
             katakana = katakana.replace(pair[0][i], pair[1][i])
             katakana_rm_ltu = katakana_rm_ltu.replace(pair[0][i], pair[1][i])
+            for j, morpheme in enumerate(morphemes):
+                morphemes[j] = morpheme.replace(pair[0][i], pair[1][i])
 
     else:
         katakana = ou_to_hyphen(sentence)
