@@ -221,6 +221,12 @@ def to_katakana(sentence, use_api=True):
                 # 読みがわかるトークン
                 katakana += reading
 
+    # 名詞抽出
+    nouns = []
+    for token in t.tokenize(sentence):
+        if token.part_of_speech.split(',')[0] == '名詞':
+            nouns.append(token.reading)
+
     # 「ッ」を削除
     katakana_rm_ltu = katakana.replace('ッ', '')
 
@@ -228,15 +234,24 @@ def to_katakana(sentence, use_api=True):
     katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
     katakana_rm_ltu= ''.join(re.findall('[ァ-ヴー]+', katakana_rm_ltu))
 
-    return katakana, katakana_rm_ltu
+    return katakana, katakana_rm_ltu, nouns
 
 
-def judge_joke(katakana, n=3):
+def judge_joke(katakana, nouns, n=3):
     ## -----*----- 判定 -----*----- ##
     # Trigram
     col = []
     for i in range(len(katakana)-n+1):
         col.append(katakana[i:(i+n)])
+
+    # 名詞と同じ音が出現
+    for noun in nouns:
+        noun_gram = [noun]
+        for i in range(len(noun)-n+1):
+            noun_gram.append(noun[i:(i+n)])
+        for c in noun_gram:
+            if katakana.count(noun) >= 2:
+                return True
 
     if len(set(col)) != len(col):
         return True
@@ -314,7 +329,7 @@ def is_joke(sentence, n=3, first=True):
         sentence = tmp
 
         # カタカナ変換
-        katakana, katakana_rm_ltu = to_katakana(sentence)
+        katakana, katakana_rm_ltu, nouns = to_katakana(sentence)
 
         # 空文字の場合 -> False
         if katakana == '':
@@ -339,8 +354,9 @@ def is_joke(sentence, n=3, first=True):
     else:
         katakana = ou_to_hyphen(sentence)
         katakana_rm_ltu = katakana
+        nouns = []
 
-    if judge_joke(katakana):
+    if judge_joke(katakana, nouns):
         return True
     else:
         if 'ー' in katakana:
