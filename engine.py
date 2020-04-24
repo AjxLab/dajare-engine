@@ -221,11 +221,11 @@ def to_katakana(sentence, use_api=True):
                 # 読みがわかるトークン
                 katakana += reading
 
-    # 名詞抽出
-    nouns = []
+    # ２文字以上の形態素を抽出
+    morphemes = []
     for token in t.tokenize(sentence):
-        if token.part_of_speech.split(',')[0] == '名詞':
-            nouns.append(token.reading)
+        if len(token.reading) >= 2:
+            morphemes.append(token.reading)
 
     # 「ッ」を削除
     katakana_rm_ltu = katakana.replace('ッ', '')
@@ -234,19 +234,19 @@ def to_katakana(sentence, use_api=True):
     katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
     katakana_rm_ltu= ''.join(re.findall('[ァ-ヴー]+', katakana_rm_ltu))
 
-    return katakana, katakana_rm_ltu, nouns
+    return katakana, katakana_rm_ltu, morphemes
 
 
-def judge_joke(katakana, nouns, n=3):
+def judge_joke(katakana, morphemes, n=3):
     ## -----*----- 判定 -----*----- ##
     # Trigram
     col = []
     for i in range(len(katakana)-n+1):
         col.append(katakana[i:(i+n)])
 
-    # 名詞と同じ音が出現
-    for noun in nouns:
-        if katakana.count(noun) >= 2:
+    # 形態素と同じ音が出現
+    for morpheme in morphemes:
+        if katakana.count(morpheme) >= 2:
             return True
 
     if len(set(col)) != len(col):
@@ -325,7 +325,7 @@ def is_joke(sentence, n=3, first=True):
         sentence = tmp
 
         # カタカナ変換
-        katakana, katakana_rm_ltu, nouns = to_katakana(sentence)
+        katakana, katakana_rm_ltu, morphemes = to_katakana(sentence)
 
         # 空文字の場合 -> False
         if katakana == '':
@@ -350,9 +350,9 @@ def is_joke(sentence, n=3, first=True):
     else:
         katakana = ou_to_hyphen(sentence)
         katakana_rm_ltu = katakana
-        nouns = []
+        morphemes = []
 
-    if judge_joke(katakana, nouns):
+    if judge_joke(katakana, morphemes):
         return True
     else:
         if 'ー' in katakana:
