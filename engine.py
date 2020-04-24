@@ -246,12 +246,8 @@ def judge_joke(katakana, nouns, n=3):
 
     # 名詞と同じ音が出現
     for noun in nouns:
-        noun_gram = [noun]
-        for i in range(len(noun)-n+1):
-            noun_gram.append(noun[i:(i+n)])
-        for c in noun_gram:
-            if katakana.count(noun) >= 2:
-                return True
+        if katakana.count(noun) >= 2:
+            return True
 
     if len(set(col)) != len(col):
         return True
