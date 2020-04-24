@@ -305,7 +305,7 @@ def ou_to_hyphen(katakana):
     return katakana
 
 
-def is_joke(sentence, n=3, first=True):
+def is_joke(sentence, n=3, first=True, morphemes=[]):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
@@ -350,22 +350,21 @@ def is_joke(sentence, n=3, first=True):
     else:
         katakana = ou_to_hyphen(sentence)
         katakana_rm_ltu = katakana
-        morphemes = []
 
     if judge_joke(katakana, morphemes):
         return True
     else:
         if 'ー' in katakana:
             # 'ー'を削除
-            if is_joke(katakana.replace('ー', ''), first=False):
+            if is_joke(katakana.replace('ー', ''), first=False, morphemes=morphemes):
                 return True
             # 'ー'を直前文字の母音に変換
-            if is_joke(hyphen_to_vowel(katakana), first=False):
+            if is_joke(hyphen_to_vowel(katakana), first=False, morphemes=morphemes):
                 return True
 
         if first and ('ッ' in sentence or 'っ' in sentence):
             # 'っ'を削除
-            if is_joke(katakana_rm_ltu, first=False):
+            if is_joke(katakana_rm_ltu, first=False, morphemes=morphemes):
                 return True
 
     return False
