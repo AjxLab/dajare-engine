@@ -227,9 +227,10 @@ def to_katakana(sentence, use_api=True):
         if len(token.reading) >= 2:
             morphemes.append(token.reading)
 
+    # 強制的にカタカナ化
+    katakana = jaconv.hira2kata(katakana)
     # 「ッ」を削除
     katakana_rm_ltu = katakana.replace('ッ', '')
-
     # カタカナのみ抽出
     katakana = ''.join(re.findall('[ァ-ヴー]+', katakana))
     katakana_rm_ltu= ''.join(re.findall('[ァ-ヴー]+', katakana_rm_ltu))
