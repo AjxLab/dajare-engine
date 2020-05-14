@@ -241,9 +241,7 @@ def to_katakana(sentence, use_api=True):
 def judge_joke(katakana, morphemes, n=3):
     ## -----*----- 判定 -----*----- ##
     # Trigram
-    col = []
-    for i in range(len(katakana)-n+1):
-        col.append(katakana[i:(i+n)])
+    col = n_gram(katakana, n)
 
     # 形態素と同じ音が出現
     for morpheme in morphemes:
@@ -290,8 +288,8 @@ def hyphen_to_vowel(katakana):
     return ret
 
 
-def ou_to_hyphen(katakana):
-    ## -----*----- 「ou」の音の処理 -----*----- ##
+def boin_to_hyphen(katakana):
+    ## -----*----- 母音 -> ハイフン変換 -----*----- ##
     ou_map =\
         [
             'オウ', 'コウ', 'ソウ', 'トウ', 'ノウ',
@@ -300,10 +298,16 @@ def ou_to_hyphen(katakana):
         ]
 
     # 「ou」 -> 「oー」
+    katakana = pyboin.text2boin(katakana).replace('')
     for ou in ou_map:
         katakana = katakana.replace(ou, ou[0]+'ー')
 
     return katakana
+
+
+def n_gram(target, n):
+    ## -----*----- n-gram -----*----- ##
+    return [ target[idx:idx + n] for idx in range(len(target) - n + 1)]
 
 
 def is_joke(sentence, n=3, first=True, morphemes=[]):
