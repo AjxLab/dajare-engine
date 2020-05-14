@@ -288,29 +288,26 @@ def hyphen_to_vowel(katakana):
     return ret
 
 
-def boin_to_hyphen(katakana):
-    ## -----*----- 母音 -> ハイフン変換 -----*----- ##
-    ou_map =\
-        [
-            'オウ', 'コウ', 'ソウ', 'トウ', 'ノウ',
-            'ホウ', 'モウ', 'ヨウ', 'ロウ', 'ヲウ',
-            'ゴウ', 'ゾウ', 'ドウ', 'ボウ', 'ポウ',
-        ]
+def boin_convert(katakana):
+    ## -----*----- 母音を変換 -----*----- ##
+    for col in n_gram(katakana, 2):
+        # 「ou」 -> 「oー」
+        if pyboin.text2boin(col) == 'オウ':
+            katakana = katakana.replace(col, col.replace('ウ', 'ー'))
+        # 「ei」 -> 「eー」
+        elif pyboin.text2boin(col) == 'エイ':
+            katakana = katakana.replace(col, col.replace('イ', 'ー'))
 
-    # 「ou」 -> 「oー」
-    katakana = pyboin.text2boin(katakana).replace('')
-    for ou in ou_map:
-        katakana = katakana.replace(ou, ou[0]+'ー')
-
+    print(katakana)
     return katakana
 
 
 def n_gram(target, n):
     ## -----*----- n-gram -----*----- ##
-    return [ target[idx:idx + n] for idx in range(len(target) - n + 1)]
+    return [ target[idx:idx + n] for idx in range(len(target) - n + 1) ]
 
 
-def is_joke(sentence, n=3, first=True, morphemes=[]):
+def is_joke(sentence, first=True, morphemes=[]):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
@@ -355,7 +352,7 @@ def is_joke(sentence, n=3, first=True, morphemes=[]):
                 morphemes[j] = morpheme.replace(pair[0][i], pair[1][i])
 
     else:
-        katakana = ou_to_hyphen(sentence)
+        katakana = boin_convert(sentence)
         katakana_rm_ltu = katakana
 
     if judge_joke(katakana, morphemes):
@@ -381,6 +378,7 @@ if __name__ == '__main__':
     jokes = []
     jokes.append('布団が吹っ飛んだ')
     jokes.append('紅茶が凍っちゃった')
+    jokes.append('芸無なゲーム')
     jokes.append('Gmailで爺滅入る')
     jokes.append('つくねがくっつくね')
     jokes.append('ソースを読んで納得したプログラマ「そーすね」')
