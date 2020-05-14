@@ -241,9 +241,7 @@ def to_katakana(sentence, use_api=True):
 def judge_joke(katakana, morphemes, n=3):
     ## -----*----- 判定 -----*----- ##
     # Trigram
-    col = []
-    for i in range(len(katakana)-n+1):
-        col.append(katakana[i:(i+n)])
+    col = n_gram(katakana, n)
 
     # 形態素と同じ音が出現
     for morpheme in morphemes:
@@ -290,27 +288,28 @@ def hyphen_to_vowel(katakana):
     return ret
 
 
-def ou_to_hyphen(katakana):
-    ## -----*----- 「ou」の音の処理 -----*----- ##
-    ou_map =\
-        [
-            'オウ', 'コウ', 'ソウ', 'トウ', 'ノウ',
-            'ホウ', 'モウ', 'ヨウ', 'ロウ', 'ヲウ',
-            'ゴウ', 'ゾウ', 'ドウ', 'ボウ', 'ポウ',
-        ]
-
-    # 「ou」 -> 「oー」
-    for ou in ou_map:
-        katakana = katakana.replace(ou, ou[0]+'ー')
+def boin_convert(katakana):
+    ## -----*----- 母音を変換 -----*----- ##
+    for col in n_gram(katakana, 2):
+        # 「ou」 -> 「oー」
+        if pyboin.text2boin(col) == 'オウ':
+            katakana = katakana.replace(col, col.replace('ウ', 'ー'))
+        # 「ei」 -> 「eー」
+        elif pyboin.text2boin(col) == 'エイ':
+            katakana = katakana.replace(col, col.replace('イ', 'ー'))
 
     return katakana
 
 
-def is_joke(sentence, n=3, first=True, morphemes=[]):
+def n_gram(target, n):
+    ## -----*----- n-gram -----*----- ##
+    return [ target[idx:idx + n] for idx in range(len(target) - n + 1) ]
+
+
+def is_joke(sentence, first=True, morphemes=[]):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
-    n：文字を分割する単位
     first：１回目の検証かどうか
     '''
     if first:
@@ -351,7 +350,7 @@ def is_joke(sentence, n=3, first=True, morphemes=[]):
                 morphemes[j] = morpheme.replace(pair[0][i], pair[1][i])
 
     else:
-        katakana = ou_to_hyphen(sentence)
+        katakana = boin_convert(sentence)
         katakana_rm_ltu = katakana
 
     if judge_joke(katakana, morphemes):
@@ -377,6 +376,7 @@ if __name__ == '__main__':
     jokes = []
     jokes.append('布団が吹っ飛んだ')
     jokes.append('紅茶が凍っちゃった')
+    jokes.append('芸無なゲーム')
     jokes.append('Gmailで爺滅入る')
     jokes.append('つくねがくっつくね')
     jokes.append('ソースを読んで納得したプログラマ「そーすね」')
