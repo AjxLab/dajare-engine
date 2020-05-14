@@ -298,7 +298,6 @@ def boin_convert(katakana):
         elif pyboin.text2boin(col) == 'エイ':
             katakana = katakana.replace(col, col.replace('イ', 'ー'))
 
-    print(katakana)
     return katakana
 
 
@@ -311,7 +310,6 @@ def is_joke(sentence, first=True, morphemes=[]):
     ## -----*----- ダジャレ判定 -----*----- ##
     '''
     sentence：判定対象の文
-    n：文字を分割する単位
     first：１回目の検証かどうか
     '''
     if first:
