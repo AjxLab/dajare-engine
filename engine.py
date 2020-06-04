@@ -364,7 +364,7 @@ def is_joke(sentence, first=True, morphemes=[]):
             if is_joke(hyphen_to_vowel(katakana), first=False, morphemes=morphemes):
                 return True
 
-        if first and ('ッ' in sentence or 'っ' in sentence):
+        if first and katakana != katakana_rm_ltu:
             # 'っ'を削除
             if is_joke(katakana_rm_ltu, first=False, morphemes=morphemes):
                 return True
@@ -376,6 +376,7 @@ if __name__ == '__main__':
     jokes = []
     jokes.append('布団が吹っ飛んだ')
     jokes.append('紅茶が凍っちゃった')
+    jokes.append('初見の食券')
     jokes.append('芸無なゲーム')
     jokes.append('Gmailで爺滅入る')
     jokes.append('つくねがくっつくね')
