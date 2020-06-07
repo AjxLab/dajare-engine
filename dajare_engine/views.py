@@ -5,6 +5,8 @@ import engine
 
 
 model = engine.Evaluate(False)
+pass_pattern = open('config/pass_pattern.txt').read().split('\n')
+pass_pattern.remove('')
 
 
 def joke_judge(request):
@@ -49,6 +51,11 @@ def joke_judge(request):
             include_sensitive = True
             sensitive_tags = [col['cluster_name'] for col in res.json()['quotients']]
             sensitive_tags = list(set(':'.join(sensitive_tags).replace('その他', '').split(':')))
+
+    # ダジャレ判定をパスする辞書と照合
+    for pattern in pass_pattern:
+        if pattern in params['joke']:
+            is_joke = True
 
     ret = {
         'is_joke': is_joke,
