@@ -25,7 +25,7 @@ Automatically determines whether a posted sentence is pun, and if true, gives a 
 
 
 ## Usage
-### Learning
+### Train Dajare
 ```sh
 $ ./train.py
 ```
