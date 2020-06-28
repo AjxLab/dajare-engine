@@ -22,4 +22,7 @@ urlpatterns = [
     path('joke/judge/', views.joke_judge),
     path('joke/evaluate/', views.joke_evaluate),
     path('joke/reading/', views.joke_reading),
+    path('dajare/judge/', views.dajare_judge),
+    path('dajare/eval/', views.dajare_eval),
+    path('dajare/reading/', views.dajare_reading),
 ]

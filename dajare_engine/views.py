@@ -39,6 +39,7 @@ def joke_judge(request):
     if not 'joke' in params:
         return JsonResponse({'is_joke': None, 'status': 'NG'})
 
+
     # ダジャレ判定
     is_joke = engine.is_joke(params['joke'])
 
@@ -65,7 +66,61 @@ def joke_judge(request):
     }
     return JsonResponse(ret)
 
+def dajare_judge(request):
+    ## -----*----- ダジャレかどうか判定 -----*----- ##
+    '''
+    uri：
+        /dajare/judge
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
+    query：
+        dajare: String,
+    response：
+        {
+            is_dajare: Boolean,
+            include_sensitive: Boolean,
+            sensitive_tags: [String]
+            status: String,
+        }
+    '''
 
+    # パラメータを辞書で取得
+    params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({'is_dajare': None, 'status': 'NG'})
+    # クエリを指定されていない -> return {}
+    if not 'dajare' in params:
+        return JsonResponse({'is_dajare': None, 'status': 'NG'})
+
+    # ダジャレ判定
+    is_dajare = engine.is_joke(params['dajare'])
+
+    # センシティブな情報が含まれているか
+    include_sensitive = False
+    sensitive_tags = []
+    res = engine.docomo.jetrun(params['dajare'])
+    if engine.docomo.check_health(res):
+        if 'quotients' in res.json():
+            include_sensitive = True
+            sensitive_tags = [col['cluster_name'] for col in res.json()['quotients']]
+            sensitive_tags = list(set(':'.join(sensitive_tags).replace('その他', '').split(':')))
+
+    # ダジャレ判定をパスする辞書と照合
+    for pattern in pass_pattern:
+        if pattern in params['dajare']:
+            is_dajare = True
+
+    ret = {
+        'is_dajare': is_dajare,
+        'include_sensitive': include_sensitive,
+        'sensitive_tags': sensitive_tags,
+        'status': 'OK'
+    }
+    return JsonResponse(ret)
 
 def joke_evaluate(request):
     ## -----*----- ダジャレを評価 -----*----- ##
@@ -102,7 +157,40 @@ def joke_evaluate(request):
     }
     return JsonResponse(ret)
 
+def dajare_eval(request):
+    ## -----*----- ダジャレを評価 -----*----- ##
+    # 1.0 ~ 5.0で評価する
+    '''
+    uri：
+        /dajare/evaluate
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
+    query：
+        dajare: String,
+    response：
+        {
+            score: Number,
+            status: String,
+        }
+    '''
 
+    # パラメータを辞書で取得
+    params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({'score': None, 'status': 'NG'})
+    # クエリを指定されていない -> return {}
+    if not 'dajare' in params:
+        return JsonResponse({'score': None, 'status': 'NG'})
+
+    ret = {
+        'score': model.predict(params['dajare']),
+        'status': 'OK'
+    }
+    return JsonResponse(ret)
 
 def joke_reading(request):
     ## -----*----- ダジャレをカタカナ変換 -----*----- ##
@@ -134,6 +222,40 @@ def joke_reading(request):
 
     ret = {
         'reading': engine.to_katakana(params['joke'])[0],
+        'status': 'OK'
+    }
+    return JsonResponse(ret)
+
+def dajare_reading(request):
+    ## -----*----- ダジャレをカタカナ変換 -----*----- ##
+    '''
+    uri：
+        /dajare/reading
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
+    query：
+        dajare: String,
+    response：
+        {
+            reading: String,
+            status: String,
+        }
+    '''
+
+    # パラメータを辞書で取得
+    params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({'reading': None, 'status': 'NG'})
+    # クエリを指定されていない -> return {}
+    if not 'dajare' in params:
+        return JsonResponse({'reading': None, 'status': 'NG'})
+
+    ret = {
+        'reading': engine.to_katakana(params['dajare'])[0],
         'status': 'OK'
     }
     return JsonResponse(ret)
