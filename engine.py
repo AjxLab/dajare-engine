@@ -238,8 +238,18 @@ def to_katakana(sentence, use_api=True):
     return katakana, katakana_rm_ltu, morphemes
 
 
-def judge_joke(katakana, morphemes, n=3):
+def judge_joke(katakana, morphemes, n=3, first=True):
     ## -----*----- 判定 -----*----- ##
+    # 文字置換
+    pair = [
+        'ッヂガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ',
+        'ツジカキクケコサシスセソタチツテトハヒフヘホハヒフヘホ'
+    ]
+    for i in range(len(pair[0])):
+        katakana = katakana.replace(pair[0][i], pair[1][i])
+        for j, morpheme in enumerate(morphemes):
+            morphemes[j] = morpheme.replace(pair[0][i], pair[1][i])
+
     # Trigram
     col = n_gram(katakana, n)
 
@@ -258,7 +268,14 @@ def judge_joke(katakana, morphemes, n=3):
                 if num_of_matching(col[i], col[j]) == 2 and pyboin.text2boin(col[i]) == pyboin.text2boin(col[j]):
                     return True
 
-        return False
+        if first:
+            for i in range(len(katakana)-1):
+                if i+1 >= len(katakana):
+                    break
+                if not katakana[i+1] in 'ァィゥェォャュョヮ' or i:
+                    continue
+                katakana = katakana[:i] + pyboin.text2boin(katakana[i+1]) + katakana[i+2:]
+            return judge_joke(katakana, morphemes, first=False)
 
 
 def num_of_matching(s1, s2):
@@ -337,17 +354,6 @@ def is_joke(sentence, first=True, morphemes=[]):
                 continue
             if pyboin.text2boin(katakana[i]) == pyboin.text2boin(katakana[i+1]):
                 katakana = katakana[:i+1] + 'ー' + katakana[i+2:]
-
-        # 文字置換
-        pair = [
-            'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ',
-            'アイウエオツヤユヨワアイウエオツヤユヨワジカキクケコサシスセソタチツテトハヒフヘホハヒフヘホ'
-        ]
-        for i in range(len(pair[0])):
-            katakana = katakana.replace(pair[0][i], pair[1][i])
-            katakana_rm_ltu = katakana_rm_ltu.replace(pair[0][i], pair[1][i])
-            for j, morpheme in enumerate(morphemes):
-                morphemes[j] = morpheme.replace(pair[0][i], pair[1][i])
 
     else:
         katakana = boin_convert(sentence)
