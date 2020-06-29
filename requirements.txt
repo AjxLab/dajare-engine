@@ -1,4 +1,4 @@
-Django==3.0.3
+Django==3.0.7
 tqdm==4.41.1
 Janome==0.3.10
 tensorflow==2.1.0
