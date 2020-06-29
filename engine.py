@@ -272,7 +272,7 @@ def judge_joke(katakana, morphemes, n=3, first=True):
             for i in range(len(katakana)-1):
                 if i+1 >= len(katakana):
                     break
-                if not katakana[i+1] in 'ァィゥェォャュョヮ' or i:
+                if not katakana[i+1] in 'ァィゥェォャュョヮ':
                     continue
                 katakana = katakana[:i] + pyboin.text2boin(katakana[i+1]) + katakana[i+2:]
             return judge_joke(katakana, morphemes, first=False)
@@ -380,6 +380,8 @@ def is_joke(sentence, first=True, morphemes=[]):
 
 if __name__ == '__main__':
     jokes = []
+
+    jokes.append('ローソンのローション')
     jokes.append('布団が吹っ飛んだ')
     jokes.append('紅茶が凍っちゃった')
     jokes.append('初見の食券')
