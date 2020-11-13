@@ -1,7 +1,7 @@
 Django==3.0.3
 tqdm==4.41.1
 Janome==0.3.10
-tensorflow==2.1.0
+tensorflow==2.3.1
 kanjize==0.1.0
 jaconv==0.2.4
 django-sslserver
